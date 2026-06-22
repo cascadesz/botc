@@ -54,17 +54,14 @@
       <select id="proposedDate" name="proposedDate"></select>
     </div>
 
-    <div>
-      <label for="proposedHour">Hour</label>
-      <select id="proposedHour" name="proposedHour"></select>
+    <div class="time-picker-group">
+      <label>Hour</label>
+      <div id="proposedHour" class="scroll-picker" data-type="hour"></div>
     </div>
 
-    <div>
-      <label for="proposedMinute">Minute</label>
-      <select id="proposedMinute" name="proposedMinute">
-        <option value="00">00</option>
-        <option value="30">30</option>
-      </select>
+    <div class="time-picker-group">
+      <label>Minute</label>
+      <div id="proposedMinute" class="scroll-picker" data-type="minute"></div>
     </div>
   </div>
 </div>

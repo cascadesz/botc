@@ -43,10 +43,26 @@ function populateHourOptions() {
 
   for (let h = 0; h < 24; h++) {
     const hh = String(h).padStart(2, '0');
-    proposedHour.innerHTML += `<option value="${hh}">${hh}</option>`;
+    const item = document.createElement('div');
+    item.className = 'picker-item';
+    item.textContent = hh;
+    item.dataset.value = hh;
+    proposedHour.appendChild(item);
   }
   
-  proposedHour.value = '19';
+  // Add center line indicator
+  const centerLine = document.createElement('div');
+  centerLine.className = 'scroll-picker-center-line';
+  proposedHour.appendChild(centerLine);
+  
+  // Scroll to 19 (hour)
+  const items = proposedHour.querySelectorAll('.picker-item');
+  if (items[19]) {
+    setTimeout(() => {
+      items[19].scrollIntoView({ behavior: 'auto', block: 'center' });
+      updatePickerSelection(proposedHour);
+    }, 0);
+  }
 }
 
 function formatDateValue(date) {
@@ -56,11 +72,43 @@ function formatDateValue(date) {
   return `${y}-${m}-${d}`;
 }
 
+function getPickerValue(pickerEl) {
+  const centerY = pickerEl.offsetHeight / 2;
+  const items = pickerEl.querySelectorAll('.picker-item');
+  let selectedValue = '00';
+  let closestDistance = Infinity;
+
+  items.forEach(item => {
+    const itemY = item.offsetTop + item.offsetHeight / 2 - pickerEl.scrollTop;
+    const distance = Math.abs(itemY - centerY);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      selectedValue = item.dataset.value;
+    }
+  });
+
+  return selectedValue;
+}
+
+function updatePickerSelection(pickerEl) {
+  const selectedValue = getPickerValue(pickerEl);
+  const items = pickerEl.querySelectorAll('.picker-item');
+  items.forEach(item => {
+    if (item.dataset.value === selectedValue) {
+      item.classList.add('selected');
+    } else {
+      item.classList.remove('selected');
+    }
+  });
+}
+
 function buildProposedDateTime() {
-  if (!proposedDate.value || !proposedHour.value || !proposedMinute.value) {
+  const hour = getPickerValue(proposedHour);
+  const minute = getPickerValue(proposedMinute);
+  if (!proposedDate.value || !hour || !minute) {
     return '';
   }
-  return `${proposedDate.value}T${proposedHour.value}:${proposedMinute.value}`;
+  return `${proposedDate.value}T${hour}:${minute}`;
 }
 ``
 
@@ -70,10 +118,13 @@ document.querySelectorAll('input[name="choice"]').forEach(radio => {
       proposedTimeWrap.classList.remove('hidden');
     } else if (radio.checked) {
       proposedTimeWrap.classList.add('hidden');
-      proposedMinute.value = '00';
     }
   });
 });
+
+// Add scroll listeners to time pickers
+proposedHour.addEventListener('scroll', () => updatePickerSelection(proposedHour));
+proposedMinute.addEventListener('scroll', () => updatePickerSelection(proposedMinute));
 
 voteForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -107,7 +158,7 @@ const proposedTime = buildProposedDateTime();
     proposedTimeWrap.classList.add('hidden');
     populateDateOptions();
     populateHourOptions();
-    proposedMinute.value = '00';
+    populateMinuteOptions();
 
 
     renderResults(data.rows || []);
@@ -178,7 +229,35 @@ function escapeHtml(str) {
     .replaceAll("'", '&#039;');
 }
 
+function populateMinuteOptions() {
+  proposedMinute.innerHTML = '';
+
+  const minutes = ['00', '30'];
+  minutes.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'picker-item';
+    item.textContent = m;
+    item.dataset.value = m;
+    proposedMinute.appendChild(item);
+  });
+  
+  // Add center line indicator
+  const centerLine = document.createElement('div');
+  centerLine.className = 'scroll-picker-center-line';
+  proposedMinute.appendChild(centerLine);
+  
+  // Scroll to 00 (minute)
+  const items = proposedMinute.querySelectorAll('.picker-item');
+  if (items[0]) {
+    setTimeout(() => {
+      items[0].scrollIntoView({ behavior: 'auto', block: 'center' });
+      updatePickerSelection(proposedMinute);
+    }, 0);
+  }
+}
+
 populateDateOptions();
 populateHourOptions();
+populateMinuteOptions();
 
 loadResults();
