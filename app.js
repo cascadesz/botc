@@ -1,5 +1,5 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbzLgECYjG4Io_Q1RTgJQoUh6FMpj0r_yBshP7ldMlmzgChDgdoOv2pwdoBfQcsrppk9/exec';
-const VERSION = 'v1.0.1';
+const VERSION = 'v1.0.2';
 
 const voteForm = document.getElementById('voteForm');
 const messageEl = document.getElementById('message');
@@ -55,11 +55,6 @@ function populateHourOptions() {
     item.dataset.value = hh;
     proposedHour.appendChild(item);
   }
-  
-  // Add center line indicator
-  const centerLine = document.createElement('div');
-  centerLine.className = 'scroll-picker-center-line';
-  proposedHour.appendChild(centerLine);
   
   // Scroll to 19 (hour)
   const items = proposedHour.querySelectorAll('.picker-item');
@@ -131,6 +126,19 @@ document.querySelectorAll('input[name="choice"]').forEach(radio => {
 // Add scroll listeners to time pickers
 proposedHour.addEventListener('scroll', () => updatePickerSelection(proposedHour));
 proposedMinute.addEventListener('scroll', () => updatePickerSelection(proposedMinute));
+
+// Add click handlers for picker items (PC only)
+function setupPickerClickHandlers(pickerEl) {
+  pickerEl.addEventListener('click', (e) => {
+    if (e.target.classList.contains('picker-item')) {
+      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => updatePickerSelection(pickerEl), 300);
+    }
+  });
+}
+
+setupPickerClickHandlers(proposedHour);
+setupPickerClickHandlers(proposedMinute);
 
 voteForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -246,11 +254,6 @@ function populateMinuteOptions() {
     item.dataset.value = m;
     proposedMinute.appendChild(item);
   });
-  
-  // Add center line indicator
-  const centerLine = document.createElement('div');
-  centerLine.className = 'scroll-picker-center-line';
-  proposedMinute.appendChild(centerLine);
   
   // Scroll to 00 (minute)
   const items = proposedMinute.querySelectorAll('.picker-item');

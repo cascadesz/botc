@@ -314,15 +314,7 @@ li {
 }
 
 .scroll-picker-center-line {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(59, 130, 246, 0.3);
-  transform: translateY(-1px);
-  pointer-events: none;
-  z-index: 2;
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -331,6 +323,7 @@ li {
     grid-template-columns: 1fr;
   }
   
-
-  
+  .picker-item {
+    cursor: default !important;
+  }
 }
