@@ -274,4 +274,46 @@ if (versionBadge) {
   versionBadge.textContent = VERSION;
 }
 
+// PDF Download functionality
+const pdfDownloadBtn = document.getElementById('pdfDownloadBtn');
+const pdfList = document.getElementById('pdfList');
+
+// Try to load PDF list from a JSON manifest file
+async function loadPdfList() {
+  try {
+    const response = await fetch('script/pdfs.json');
+    if (response.ok) {
+      const data = await response.json();
+      return (data.files || []).sort();
+    }
+  } catch (err) {
+    console.log('No pdfs.json found, checking for PDFs...');
+  }
+  
+  // Fallback: Try to fetch individual PDFs (this won't work on all servers)
+  const commonNames = ['script', 'Script', 'SCRIPT'];
+  return [];
+}
+
+async function displayPdfList() {
+  const pdfs = await loadPdfList();
+  
+  if (pdfs.length === 0) {
+    pdfList.innerHTML = '<p style="color: #666; font-size: 12px; margin: 8px 0 0 0;">No scripts available. Add PDF files to the <code>script/</code> folder and create a <code>script/pdfs.json</code> file with a list of filenames.</p>';
+    pdfList.style.display = 'block';
+    return;
+  }
+  
+  pdfList.innerHTML = pdfs.map((pdf, index) => `
+    <div style="margin: 8px 0; padding: 8px; background-color: #f5f5f5; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 14px;">📄 ${escapeHtml(pdf)}</span>
+      <a href="script/${encodeURIComponent(pdf)}" download style="padding: 6px 12px; background-color: #28a745; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer;">Download</a>
+    </div>
+  `).join('');
+  
+  pdfList.style.display = 'block';
+}
+
+pdfDownloadBtn.addEventListener('click', displayPdfList);
+
 loadResults();
