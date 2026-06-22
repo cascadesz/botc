@@ -1,12 +1,6 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbzLgECYjG4Io_Q1RTgJQoUh6FMpj0r_yBshP7ldMlmzgChDgdoOv2pwdoBfQcsrppk9/exec';
 const VERSION = 'v1.0.2';
 
-// Update version badge
-const versionBadge = document.getElementById('versionBadge');
-if (versionBadge) {
-  versionBadge.textContent = VERSION;
-}
-
 const voteForm = document.getElementById('voteForm');
 const messageEl = document.getElementById('message');
 const refreshBtn = document.getElementById('refreshBtn');
@@ -274,5 +268,11 @@ function populateMinuteOptions() {
 populateDateOptions();
 populateHourOptions();
 populateMinuteOptions();
+
+// Update version badge after DOM is ready
+const versionBadge = document.getElementById('versionBadge');
+if (versionBadge) {
+  versionBadge.textContent = VERSION;
+}
 
 loadResults();
