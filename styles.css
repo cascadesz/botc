@@ -273,14 +273,20 @@ li {
   color: var(--muted);
   scroll-snap-align: center;
   scroll-snap-stop: always;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
   cursor: pointer;
 }
 
 .picker-item.selected {
-  color: var(--text);
-  font-weight: 600;
+  color: white;
+  font-weight: 700;
   font-size: 24px;
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+}
+
+#proposedMinute .picker-item {
+  height: 70px;
 }
 
 .scroll-picker::before {
