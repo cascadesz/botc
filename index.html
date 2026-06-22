@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Board Game Schedule Poll</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Board Game Schedule Poll</h1>
+      <p class="subtitle">
+        Vote for the proposed board game session.
+      </p>
+      <div class="session-box">
+        <strong>Suggested session:</strong>
+        <div>Friday, 28 June 2026 · 7:30 PM</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Cast your vote</h2>
+
+      <form id="voteForm">
+        <label for="name">Your name</label>
+        <input id="name" name="name" type="text" placeholder="Enter your name" required />
+
+        <fieldset>
+          <legend>Choose one option</legend>
+
+          <label class="radio-row">
+            <input type="radio" name="choice" value="Yes" required />
+            <span>Yes</span>
+          </label>
+
+          <label class="radio-row">
+            <input type="radio" name="choice" value="Maybe" />
+            <span>Maybe</span>
+          </label>
+
+          <label class="radio-row">
+            <input type="radio" name="choice" value="Propose new time" />
+            <span>Propose new time</span>
+          </label>
+        </fieldset>
+
+        <div id="proposedTimeWrap" class="hidden">
+          <label for="proposedTime">Suggested new time</label>
+          <input id="proposedTime" name="proposedTime" type="datetime-local" />
+        </div>
+
+        <button type="submit">Submit vote</button>
+      </form>
+
+      <div id="message" class="message"></div>
+    </section>
+
+    <section class="card">
+      <div class="results-header">
+        <h2>Live results</h2>
+        <button id="refreshBtn" type="button">Refresh</button>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-box yes">
+          <div class="summary-label">Yes</div>
+          <div id="yesCount" class="summary-count">0</div>
+        </div>
+        <div class="summary-box maybe">
+          <div class="summary-label">Maybe</div>
+          <div id="maybeCount" class="summary-count">0</div>
+        </div>
+        <div class="summary-box propose">
+          <div class="summary-label">Propose new time</div>
+          <div id="proposeCount" class="summary-count">0</div>
+        </div>
+      </div>
+
+      <div class="results-columns">
+        <div>
+          <h3>Yes</h3>
+          <ul id="yesList"></ul>
+        </div>
+        <div>
+          <h3>Maybe</h3>
+          <ul id="maybeList"></ul>
+        </div>
+        <div>
+          <h3>Proposed new times</h3>
+          <ul id="proposeList"></ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
