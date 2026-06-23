@@ -305,16 +305,62 @@ async function displayPdfList() {
   }
   
   pdfList.innerHTML = pdfs.map((pdf, index) => `
-    <div style="margin: 8px 0; padding: 10px; background-color: #f0f7ff; border: 1px solid #0066cc; border-radius: 4px; display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 14px; font-weight: 500; color: #000;">📄 ${escapeHtml(pdf)}</span>
-      <a href="script/${encodeURIComponent(pdf)}" download style="padding: 6px 12px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 3px; font-size: 12px; cursor: pointer;">Download</a>
+    <div class="pdf-item" style="margin: 8px 0; padding: 10px; background-color: #f0f7ff; border: 1px solid #0066cc; border-radius: 4px;">
+      <div class="pdf-item-row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+        <span style="font-size: 14px; font-weight: 500; color: #000;">📄 ${escapeHtml(pdf)}</span>
+        <div class="pdf-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="script/${encodeURIComponent(pdf)}" download title="Download" aria-label="Download" style="padding: 6px 12px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 3px; font-size: 14px; cursor: pointer;">⬇️</a>
+          <button type="button" class="qr-toggle-btn" data-file="${encodeURIComponent(pdf)}" title="Generate QR code" aria-label="Generate QR code" style="padding: 6px 12px; background-color: #0f172a; color: white; border: none; border-radius: 3px; font-size: 14px; cursor: pointer;">🔳</button>
+        </div>
+      </div>
+      <div class="qr-container" id="qr-${index}" style="display: none; margin-top: 10px;">
+      </div>
     </div>
   `).join('');
-  
+
   pdfList.style.display = 'block';
   pdfList.style.backgroundColor = '#e8e8e8';
   pdfList.style.padding = '10px';
   pdfList.style.borderRadius = '4px';
+
+  pdfList.querySelectorAll('.qr-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const encodedPdf = btn.dataset.file;
+      const pdf = decodeURIComponent(encodedPdf);
+      const container = btn.closest('.pdf-item').querySelector('.qr-container');
+      togglePdfQr(container, pdf);
+    });
+  });
+}
+
+function getPdfDownloadUrl(pdf) {
+  return new URL(`script/${encodeURIComponent(pdf)}`, location.href).href;
+}
+
+function getQrImageUrl(downloadUrl) {
+  return `https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=${encodeURIComponent(downloadUrl)}&choe=UTF-8`;
+}
+
+function togglePdfQr(container, pdf) {
+  if (!container) return;
+  const isVisible = container.style.display === 'block';
+  if (isVisible) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  const downloadUrl = getPdfDownloadUrl(pdf);
+  const qrImageUrl = getQrImageUrl(downloadUrl);
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px; background: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1;">
+      <img class="qr-image" src="${qrImageUrl}" alt="QR code to download ${escapeHtml(pdf)}" style="width: 180px; height: 180px;" />
+      <div style="font-size: 12px; color: #1f2937; text-align: center;">Scan to download this script</div>
+      <a href="${downloadUrl}" target="_blank" rel="noreferrer" style="font-size: 12px; color: #1d4ed8; text-decoration: underline;">Open file in browser</a>
+    </div>
+  `;
+  container.style.display = 'block';
 }
 
 pdfDownloadBtn.addEventListener('click', displayPdfList);
