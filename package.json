@@ -1,0 +1,9 @@
+{
+  "name": "boardgame-poll",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate-pdfs": "node generate-pdfs-list.js",
+    "watch-pdfs": "node generate-pdfs-list.js --watch"
+  }
+}
