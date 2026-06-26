@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "generate-pdfs": "node generate-pdfs-list.js",
-    "watch-pdfs": "node generate-pdfs-list.js --watch"
+    "watch-pdfs": "node generate-pdfs-list.js --watch",
+    "start": "node server.js"
   }
 }

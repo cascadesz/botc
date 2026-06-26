@@ -194,6 +194,17 @@ button:hover {
   display: none;
 }
 
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.upload-form input[type="file"] {
+  color: var(--text);
+}
+
 .qr-container {
   border-radius: 10px;
 }

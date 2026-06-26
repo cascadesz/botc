@@ -277,6 +277,9 @@ if (versionBadge) {
 // PDF Download functionality
 const pdfDownloadBtn = document.getElementById('pdfDownloadBtn');
 const pdfList = document.getElementById('pdfList');
+const uploadPdfForm = document.getElementById('uploadPdfForm');
+const pdfFileInput = document.getElementById('pdfFileInput');
+const uploadMessage = document.getElementById('uploadMessage');
 
 function updateDownloadToggle(expanded) {
   pdfDownloadBtn.textContent = expanded ? '📄 Download Script ▴' : '📄 Download Script ▾';
@@ -373,6 +376,41 @@ function togglePdfQr(container, pdf) {
 }
 
 pdfDownloadBtn.addEventListener('click', togglePdfList);
+
+if (uploadPdfForm) {
+  uploadPdfForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const file = pdfFileInput?.files?.[0];
+
+    if (!file) {
+      uploadMessage.textContent = 'Please choose a PDF file first.';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('pdfFile', file);
+
+    uploadMessage.textContent = 'Uploading PDF...';
+
+    try {
+      const response = await fetch('/api/upload-pdf', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Upload failed.');
+      }
+
+      uploadMessage.textContent = `Uploaded ${data.file}`;
+      uploadPdfForm.reset();
+      await renderPdfList();
+    } catch (error) {
+      uploadMessage.textContent = `Error: ${error.message}`;
+    }
+  });
+}
 
 updateDownloadToggle(false);
 loadResults();
