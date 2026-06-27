@@ -411,7 +411,8 @@ if (uploadPdfForm) {
     uploadMessage.textContent = 'Uploading PDF...';
 
     try {
-      const response = await fetch('/api/upload-pdf', {
+      const uploadUrl = new URL('api/upload-pdf', window.location.href);
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData
       });

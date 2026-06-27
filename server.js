@@ -159,6 +159,11 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
+function isUploadRoute(pathname) {
+  const normalized = pathname.replace(/\/+$/, '');
+  return normalized === '/api/upload-pdf' || normalized.endsWith('/api/upload-pdf');
+}
+
 function serveStaticFile(res, filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
@@ -177,7 +182,7 @@ function serveStaticFile(res, filePath) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
 
-  if (req.method === 'POST' && url.pathname === '/api/upload-pdf') {
+  if (req.method === 'POST' && isUploadRoute(url.pathname)) {
     try {
       const { fileName, fileBuffer } = await parseMultipartFile(req);
       const targetPath = path.join(scriptDir, fileName);
