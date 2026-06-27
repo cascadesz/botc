@@ -349,6 +349,24 @@ function getPdfDownloadUrl(pdf) {
   return new URL(`script/${encodeURIComponent(pdf)}`, location.href).href;
 }
 
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    const preview = text.slice(0, 160).replace(/\s+/g, ' ').trim();
+    throw new Error(
+      preview.startsWith('<')
+        ? 'The upload endpoint returned an HTML response. Make sure the app is running with npm start.'
+        : `Unexpected server response: ${preview || 'empty response'}`
+    );
+  }
+}
+
 function getQrImageUrl(downloadUrl) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(downloadUrl)}`;
 }
@@ -397,7 +415,7 @@ if (uploadPdfForm) {
         method: 'POST',
         body: formData
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok || !data.ok) {
         throw new Error(data.error || 'Upload failed.');
