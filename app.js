@@ -274,5 +274,104 @@ if (versionBadge) {
   versionBadge.textContent = VERSION;
 }
 
+const pdfDownloadBtn = document.getElementById('pdfDownloadBtn');
+const pdfList = document.getElementById('pdfList');
 
+function updateDownloadToggle(expanded) {
+  pdfDownloadBtn.textContent = expanded ? '📄 Download Script ▴' : '📄 Download Script ▾';
+  pdfDownloadBtn.setAttribute('aria-expanded', String(expanded));
+}
+
+async function loadPdfList() {
+  try {
+    const response = await fetch('script/pdfs.json', { cache: 'no-store' });
+    if (response.ok) {
+      const data = await response.json();
+      return (data.files || []).sort();
+    }
+  } catch (err) {
+    console.log('No pdfs.json found, checking for PDFs...');
+  }
+
+  return [];
+}
+
+async function renderPdfList() {
+  const pdfs = await loadPdfList();
+
+  if (pdfs.length === 0) {
+    pdfList.innerHTML = '<p style="color: #666; font-size: 12px; margin: 8px 0 0 0;">No scripts available in the <code>script/</code> folder.</p>';
+    return;
+  }
+
+  pdfList.innerHTML = pdfs.map((pdf, index) => `
+    <div class="pdf-item">
+      <div class="pdf-item-row">
+        <div class="pdf-file-info">
+          <span class="pdf-file-name">📄 ${escapeHtml(pdf)}</span>
+        </div>
+        <div class="pdf-actions">
+          <button type="button" class="qr-toggle-btn" data-file="${encodeURIComponent(pdf)}" title="Generate QR code" aria-label="Generate QR code">QR code</button>
+          <a href="script/${encodeURIComponent(pdf)}" download title="Download" aria-label="Download">Download</a>
+        </div>
+      </div>
+      <div class="qr-container" id="qr-${index}" style="display: none; margin-top: 10px;"></div>
+    </div>
+  `).join('');
+
+  pdfList.querySelectorAll('.qr-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const encodedPdf = btn.dataset.file;
+      const pdf = decodeURIComponent(encodedPdf);
+      const container = btn.closest('.pdf-item').querySelector('.qr-container');
+      togglePdfQr(container, pdf);
+    });
+  });
+}
+
+async function togglePdfList() {
+  const expanded = !pdfList.classList.contains('expanded');
+  pdfList.classList.toggle('expanded', expanded);
+  pdfList.classList.toggle('collapsed', !expanded);
+  updateDownloadToggle(expanded);
+  if (expanded) {
+    await renderPdfList();
+  }
+}
+
+function getPdfDownloadUrl(pdf) {
+  return new URL(`script/${encodeURIComponent(pdf)}`, location.href).href;
+}
+
+function getQrImageUrl(downloadUrl) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(downloadUrl)}`;
+}
+
+function togglePdfQr(container, pdf) {
+  if (!container) return;
+  const isVisible = container.style.display === 'block';
+  if (isVisible) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  const downloadUrl = getPdfDownloadUrl(pdf);
+  const qrImageUrl = getQrImageUrl(downloadUrl);
+
+  container.innerHTML = `
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px; background: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1;">
+      <img class="qr-image" src="${qrImageUrl}" alt="QR code to download ${escapeHtml(pdf)}" style="width: 180px; height: 180px;" />
+      <div style="font-size: 12px; color: #1f2937; text-align: center;">Scan to download this script</div>
+      <a href="${downloadUrl}" target="_blank" rel="noreferrer" style="font-size: 12px; color: #1d4ed8; text-decoration: underline;">Open file in browser</a>
+    </div>
+  `;
+  container.style.display = 'block';
+}
+
+if (pdfDownloadBtn) {
+  pdfDownloadBtn.addEventListener('click', togglePdfList);
+}
+
+updateDownloadToggle(false);
 loadResults();

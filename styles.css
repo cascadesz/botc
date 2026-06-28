@@ -83,6 +83,80 @@ label, legend {
   font-weight: 600;
 }
 
+.pdf-item {
+  transition: background-color 0.2s ease;
+  margin: 8px 0;
+  padding: 10px;
+  background-color: #f0f7ff;
+  border: 1px solid #0066cc;
+  border-radius: 4px;
+  color: #0f172a;
+}
+
+.pdf-item:hover {
+  background-color: #e8f1ff;
+}
+
+.pdf-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdf-file-info {
+  flex: 1 1 auto;
+}
+
+.pdf-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.pdf-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pdf-actions button,
+.pdf-actions a {
+  min-width: 96px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.pdf-actions button {
+  background-color: #0f172a;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.pdf-actions a {
+  background-color: #0066cc;
+  color: white;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-list.collapsed {
+  display: none;
+}
+
+.qr-container {
+  border-radius: 10px;
+}
+
+.qr-image {
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+}
+
 input[type="text"],
 input[type="datetime-local"] {
   width: 100%;
